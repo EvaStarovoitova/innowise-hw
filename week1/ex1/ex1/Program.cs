@@ -1,13 +1,11 @@
 ﻿using System;
-
-
 namespace ex1
 {
     public interface ICalc
     {
         double Calculate(double num1, double num2);
     }
-
+    
     public class Addition : ICalc
     {
         public double Calculate(double num1, double num2)
@@ -48,7 +46,6 @@ namespace ex1
     }
     class Calculator
     {
-
         public ICalc Operation { get; set; }
 
         public double Result(double num1, double num2)
@@ -125,7 +122,6 @@ namespace ex1
             Calculator calculator=new Calculator();
             double result = 0;
             
-
             while(true)
             {
                 Console.WriteLine("Хотите ли вы использовать калькулятор (введите y или n)?");
