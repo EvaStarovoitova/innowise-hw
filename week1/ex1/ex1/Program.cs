@@ -46,7 +46,6 @@ namespace ex1
             return num1 - num2;
         }
     }
-
     class Calculator
     {
 
@@ -93,13 +92,10 @@ namespace ex1
                     return null;
             }
         }
-
         private static string GetOperationFromUser()
         {
             Console.WriteLine("Введите одну из операций (+, -, /, *)");
-            return Console.ReadLine();
-
-            
+            return Console.ReadLine();     
         }
         private static void RunCalculation(Calculator calculator, double firstNum, double secondNum, string operation)
         {
