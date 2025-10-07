@@ -14,17 +14,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\innowise-hw\\week1\\ex1\\ex1\\Program.cs",
               "RelativeDocumentMoniker": "ex1\\Program.cs",
-              "ToolTip": "D:\\innowise-hw\\week1\\ex1\\ex1\\Program.cs*",
-              "RelativeToolTip": "ex1\\Program.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
+              "ToolTip": "D:\\innowise-hw\\week1\\ex1\\ex1\\Program.cs",
+              "RelativeToolTip": "ex1\\Program.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAAAuwDgAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-05T07:14:34.899Z",
               "EditorCaption": ""

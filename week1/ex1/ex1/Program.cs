@@ -5,20 +5,20 @@ namespace ex1
 {
     public interface ICalc
     {
-        double Calc(double num1, double num2);
+        double Calculate(double num1, double num2);
     }
 
-    public class Sum : ICalc
+    public class Addition : ICalc
     {
-        public double Calc(double num1, double num2)
+        public double Calculate(double num1, double num2)
         {
             return num1 + num2;
         }
     }
 
-    public class Dev : ICalc
+    public class Division : ICalc
     {
-        public double Calc(double num1, double num2)
+        public double Calculate(double num1, double num2)
         {
             if (num2 != 0)
             {
@@ -27,22 +27,21 @@ namespace ex1
             else
             {
                 throw new DivideByZeroException("Нельзя делить на ноль!");
-            }
-                      
+            }                     
         }
     }
 
-    public class Mul : ICalc
+    public class Multiplication : ICalc
     {
-        public double Calc(double num1, double num2)
+        public double Calculate(double num1, double num2)
         {
             return num1 * num2;
         }
     }
 
-    public class Sub : ICalc
+    public class Subtraction : ICalc
     {
-        public double Calc(double num1, double num2)
+        public double Calculate(double num1, double num2)
         {
             return num1 - num2;
         }
@@ -51,23 +50,85 @@ namespace ex1
     class Calculator
     {
 
-        public ICalc Calculate { get; set; }
+        public ICalc Operation { get; set; }
 
         public double Result(double num1, double num2)
         {
-            return Calculate.Calc(num1, num2);
+            return Operation.Calculate(num1, num2);
         }
-    }
-
-    
-    
+    }    
     class Program
     {
+        private static double InputFromUser(string message)
+        {
+            double number;
+
+            while (true)
+            {
+                Console.WriteLine(message);
+
+                if (double.TryParse(Console.ReadLine(), out number))
+                {
+                    return number;
+                }
+                else
+                {
+                    Console.WriteLine("Введите число!");
+                }
+            }
+        }
+        private static ICalc GetOperation(string operation)
+        {
+            switch (operation)
+            {
+                case "+":
+                    return new Addition();                 
+                case "-":
+                   return new Subtraction();
+                case "*":
+                   return new Multiplication();
+                case "/":
+                    return new Division();
+                default:
+                    return null;
+            }
+        }
+
+        private static string GetOperationFromUser()
+        {
+            Console.WriteLine("Введите одну из операций (+, -, /, *)");
+            return Console.ReadLine();
+
+            
+        }
+        private static void RunCalculation(Calculator calculator, double firstNum, double secondNum, string operation)
+        {
+            try
+            {
+                calculator.Operation = GetOperation(operation);
+                if (calculator.Operation == null)
+                {
+                    Console.WriteLine("Введите одну из предложенных операций! (+, -, /, *)");
+                    return;
+                }
+
+                double result = calculator.Result(firstNum, secondNum);
+                Console.WriteLine($"Результат операции: {result}");
+            }
+            catch (DivideByZeroException)
+            {
+                Console.WriteLine("Нельзя делить на ноль!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Найдена ошибка:{ex.Message}");
+            }
+        }
         static void Main(string[] args)
         {
             Calculator calculator=new Calculator();
             double result = 0;
-            double num1, num2;
+            
 
             while(true)
             {
@@ -76,84 +137,15 @@ namespace ex1
 
                 if (answer.ToLower()=="y")
                 {
-                    while (true)
-                    {
-                        Console.WriteLine("Введите первое число:");
+                    double firstNum = InputFromUser("Введите первое число");
+                    string operation = GetOperationFromUser();
+                    double secondNum = InputFromUser("Введите второе число");
 
-                        if (double.TryParse(Console.ReadLine(), out num1))
-                        {
-                           
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Введите число!");
-                        }
-                    }
-                   
-
-                    Console.WriteLine("Введите одну из операций  +, -, *, /:");
-                    string operation = Console.ReadLine();
-
-                    while (true)
-                    {
-                        Console.WriteLine("Введите второе число:");
-
-                        if (double.TryParse(Console.ReadLine(), out num2))
-                        {
-                           
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Введите число!");
-                        }
-                    }
-                    
-
-                    try
-                    {
-                        switch (operation)
-                        {
-                            case "+":
-                                calculator.Calculate = new Sum();
-                                result = calculator.Result(num1, num2);
-                                Console.WriteLine($"Результат сложения {result}");
-                                break;
-                            case "-":
-                                calculator.Calculate = new Sub();
-                                result = calculator.Result(num1, num2);
-                                Console.WriteLine($"Результат вычитания {result}");
-                                break;
-                            case "*":
-                                calculator.Calculate = new Mul();
-                                result = calculator.Result(num1, num2);
-                                Console.WriteLine($"Результат умножения {result}");
-                                break;
-                            case "/":
-                                calculator.Calculate = new Dev();
-                                result = calculator.Result(num1, num2);
-                                Console.WriteLine($"Результат деления {result}");
-                                break;
-                            default:
-                                Console.WriteLine("Нет такой операции! Введите одну из предложенных операций!");
-                                break;
-                        }
-                    }
-                    catch(DivideByZeroException)
-                    {
-                        Console.WriteLine("Нельзя делить на ноль!");
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine($"Найдена ошибка:{ex.Message}");
-                    }
-                     
+                    RunCalculation(calculator, firstNum, secondNum, operation);
                 }
                 else if (answer.ToLower() == "n")
                 {
                     break;
-
                 }
                 else
                 {

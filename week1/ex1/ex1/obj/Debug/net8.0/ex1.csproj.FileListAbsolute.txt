@@ -12,3 +12,4 @@ D:\innowise-hw\week1\ex1\ex1\obj\Debug\net8.0\refint\ex1.dll
 D:\innowise-hw\week1\ex1\ex1\obj\Debug\net8.0\ex1.pdb
 D:\innowise-hw\week1\ex1\ex1\obj\Debug\net8.0\ex1.genruntimeconfig.cache
 D:\innowise-hw\week1\ex1\ex1\obj\Debug\net8.0\ref\ex1.dll
+D:\innowise-hw\week1\ex1\ex1\obj\Debug\net8.0\ex1.sourcelink.json
