@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ex4.Models;
 using ex4.Data;
+using ex4.Services;
 
 namespace ex4.Controllers
 {
@@ -9,77 +10,83 @@ namespace ex4.Controllers
     [ApiController]
     public class AuthorsController : ControllerBase
     {
+        private readonly AuthorService _authorServices;
+
+        public AuthorsController()
+        {
+            _authorServices = new AuthorService();
+        }
+           
+
         [HttpGet]
         public ActionResult<List<Author>> GetAllAuthor()
         {
             try
             {
-                return Ok(DataContext.Authors);
+                var autors = _authorServices.GetAllAuthors();
+                return Ok(autors);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error");
+                return NotFound("Авторы не найдены");
             }
         }
 
         [HttpGet("{id}")]
         public ActionResult<Author> GetAuthor(int id)
         {
-            var author = DataContext.Authors.FirstOrDefault(x => x.Id == id);
-            if (author == null)
+            try
             {
-                return NotFound("Указанный автор не существует");
+                var author = _authorServices.GetAuthorById(id);
+                return Ok(author);
             }
-            return Ok(author);
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpPost]
         public ActionResult<Author> CreateAuthor(Author author)
         {
-            if (string.IsNullOrEmpty(author.Name))
+            try
             {
-                return BadRequest("Имя автора обязательно");
+                var createdAuthor = _authorServices.CreateAuthor(author); 
+                return CreatedAtAction(nameof(GetAuthor), new { id = createdAuthor.Id }, createdAuthor);
             }
-
-            var newId = DataContext.Authors.Any() ? DataContext.Authors.Max(x => x.Id) + 1 : 1;
-            author.Id = newId;
-
-            DataContext.Authors.Add(author);
-
-            return CreatedAtAction(nameof(GetAuthor), new { id = author.Id }, author);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);  
+            }
         }
 
         [HttpPut("{id}")]
         public ActionResult<Author> UpdateAuthor(int id, Author updateAuthor) 
         {
-            var existAuthor = DataContext.Authors.FirstOrDefault(x => x.Id == id);
-            if (existAuthor == null)
+            try
             {
-                return NotFound("Указанный автор не существует"); 
+                var existAuthor = _authorServices.UpdateAuthor(id, updateAuthor);
+                return Ok(existAuthor);
             }
-
-            if (string.IsNullOrEmpty(updateAuthor.Name))
+            catch (Exception ex)
             {
-                return BadRequest("Имя автора обязательно");
+                return BadRequest(ex.Message);
             }
-
-            existAuthor.Name = updateAuthor.Name;
-            existAuthor.DateOfBirth = updateAuthor.DateOfBirth;
-
-            return Ok(existAuthor);
+            
         }
 
         [HttpDelete("{id}")]
         public ActionResult DeleteAuthor(int id) 
         {
-            var existAuthor = DataContext.Authors.FirstOrDefault(x => x.Id == id);
-            if (existAuthor == null)
+            try
             {
-                return NotFound("Указанный автор не существует"); 
+                _authorServices.DeleteAuthor(id);
+                return NoContent();
             }
-
-            DataContext.Authors.Remove(existAuthor);
-            return NoContent();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
