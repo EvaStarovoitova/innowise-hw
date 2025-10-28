@@ -8,7 +8,6 @@ namespace ex4.Models
         public string Title { get; set; }
         public DateTime PublishedYear { get; set; }
         public int AuthorId { get; set; }
-
         public Author Author { get; set; }
         public Book() { }
         public Book(string title, DateTime publishedYear, int authorId)
