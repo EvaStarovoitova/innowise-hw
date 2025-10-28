@@ -12,9 +12,9 @@ namespace ex4.Controllers
     {
         private readonly BookService _bookServices;
 
-        public BooksController()
+        public BooksController(BookService bookService)
         {
-            _bookServices = new BookService();
+            _bookServices = bookService;
         }
 
         [HttpGet]
@@ -52,7 +52,7 @@ namespace ex4.Controllers
             try
             {
                 var createdBook = _bookServices.CreateBook(book);
-                return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
+                return CreatedAtAction(nameof(GetBook), new { id = createdBook.Id }, createdBook);
             }
             catch (Exception ex)
             {
@@ -82,6 +82,20 @@ namespace ex4.Controllers
             {
                 _bookServices.DeleteBook(id);
                 return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("by-year/{year}")]
+        public ActionResult<List<Book>> GetBooksByYear(int year)
+        {
+            try
+            {
+                var books = _bookServices.SelectBookByPublishedYear(year);
+                return Ok(books);
             }
             catch (Exception ex)
             {
