@@ -38,16 +38,12 @@ namespace ex4.Services
                 throw new Exception("Имя автора обязательно");
             }
 
-            // Если автор приходит с книгами, корректируем связи
             if (author.Books != null && author.Books.Any())
             {
                 foreach (var book in author.Books)
                 {
-                    // Сбрасываем ID книги чтобы не было конфликтов
                     book.Id = 0;
-                    // Устанавливаем связь с автором
                     book.Author = author;
-                    book.AuthorId = 0; // EF сам установит правильный ID после сохранения
                 }
             }
 
