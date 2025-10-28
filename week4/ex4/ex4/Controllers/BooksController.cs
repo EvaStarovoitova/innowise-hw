@@ -10,11 +10,11 @@ namespace ex4.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly BookService _bookServices;
+        private readonly IBookService _bookService;
 
-        public BooksController(BookService bookService)
+        public BooksController(IBookService bookService)
         {
-            _bookServices = bookService;
+            _bookService = bookService;
         }
 
         [HttpGet]
@@ -22,7 +22,7 @@ namespace ex4.Controllers
         {
             try
             {
-                var books =_bookServices.GetAllBooks();
+                var books =_bookService.GetAllBooks();
                 return Ok(books);
             }
             catch (Exception ex)
@@ -36,14 +36,13 @@ namespace ex4.Controllers
         {
             try
             {
-                var book = _bookServices.GetBook(id);
+                var book = _bookService.GetBook(id);
                 return Ok(book);
             }
             catch (Exception ex)
             {
                 return NotFound(ex.Message);
             }
-
         }
 
         [HttpPost]
@@ -51,7 +50,7 @@ namespace ex4.Controllers
         {
             try
             {
-                var createdBook = _bookServices.CreateBook(book);
+                var createdBook = _bookService.CreateBook(book);
                 return CreatedAtAction(nameof(GetBook), new { id = createdBook.Id }, createdBook);
             }
             catch (Exception ex)
@@ -65,14 +64,13 @@ namespace ex4.Controllers
         {
             try
             {
-                var existBook = _bookServices.UpdateBook(id, updatedBook);
+                var existBook = _bookService.UpdateBook(id, updatedBook);
                 return Ok(existBook);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
         }
 
         [HttpDelete("{id}")]
@@ -80,7 +78,7 @@ namespace ex4.Controllers
         {
             try
             {
-                _bookServices.DeleteBook(id);
+                _bookService.DeleteBook(id);
                 return NoContent();
             }
             catch (Exception ex)
@@ -94,7 +92,7 @@ namespace ex4.Controllers
         {
             try
             {
-                var books = _bookServices.SelectBookByPublishedYear(year);
+                var books = _bookService.SelectBookByPublishedYear(year);
                 return Ok(books);
             }
             catch (Exception ex)

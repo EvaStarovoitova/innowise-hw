@@ -1,29 +1,25 @@
 ﻿using ex4.Data;
 using ex4.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ex4.Services
 {
-    public class AuthorService
+    public class AuthorService : IAuthorService
     {
-        private readonly LibraryContext _context;
-        public AuthorService(LibraryContext context)
+        private readonly IAuthorRepository _authorRep;
+
+        public AuthorService(IAuthorRepository authorRep)
         {
-            _context = context;
+            _authorRep = authorRep;
         }
+
         public List<Author> GetAllAuthors()
         {
-            return _context.Authors
-                .Include(a=>a.Books)
-                .ToList();
+            return _authorRep.GetAll();
         }
+
         public Author GetAuthorById(int id)
         {
-            var author = _context.Authors
-                .Include(a => a.Books)
-                .FirstOrDefault(x => x.Id == id);
-
+            var author = _authorRep.GetById(id);
             if (author == null)
             {
                 throw new Exception("Указанный автор не существует");
@@ -32,30 +28,28 @@ namespace ex4.Services
         }
 
         public Author CreateAuthor(Author author)
-        {
+        {        
             if (string.IsNullOrEmpty(author.Name))
             {
                 throw new Exception("Имя автора обязательно");
             }
-
+         
             if (author.Books != null && author.Books.Any())
             {
                 foreach (var book in author.Books)
                 {
-                    book.Id = 0;
+                    book.Id = 0; 
                     book.Author = author;
                 }
             }
 
-            _context.Authors.Add(author);
-            _context.SaveChanges();
-            return author;
+            return _authorRep.Create(author);
         }
-       
+
         public Author UpdateAuthor(int id, Author updateAuthor)
         {
-            var existAuthor = _context.Authors.FirstOrDefault(x => x.Id == id);
-            if (existAuthor == null)
+            var existingAuthor = _authorRep.GetById(id);
+            if (existingAuthor == null)
             {
                 throw new Exception("Указанный автор не существует");
             }
@@ -65,41 +59,28 @@ namespace ex4.Services
                 throw new Exception("Имя автора обязательно");
             }
 
-            existAuthor.Name = updateAuthor.Name;
-            existAuthor.DateOfBirth = updateAuthor.DateOfBirth;
-            _context.SaveChanges();
-            return existAuthor;
+            existingAuthor.Name = updateAuthor.Name;
+            existingAuthor.DateOfBirth = updateAuthor.DateOfBirth;
+
+            return _authorRep.Update(existingAuthor);
         }
 
-        
         public void DeleteAuthor(int id)
         {
-            var existAuthor = _context.Authors
-                .Include(a => a.Books)
-                .FirstOrDefault(x => x.Id == id);
-
+            var existAuthor = _authorRep.GetByIdWithBooks(id); 
             if (existAuthor == null)
             {
                 throw new Exception("Указанный автор не существует");
             }
 
-            _context.Authors.Remove(existAuthor);
-            _context.SaveChanges();
+            _authorRep.Delete(id);
         }
 
         public List<object> GetAuthorWithBookCount()
         {
             try
             {
-                return _context.Authors
-                    .Select(a => new
-                    {
-                        Id = a.Id,
-                        Name = a.Name,
-                        DateOfBirth = a.DateOfBirth,
-                        BookCount = a.Books.Count()
-                    })
-                    .ToList<object>();
+                return _authorRep.GetAuthorWithBookCount();
             }
             catch (Exception ex)
             {
@@ -110,11 +91,8 @@ namespace ex4.Services
         public List<Author> FindAuthorsByName(string name)
         {
             try
-            {
-                return _context.Authors
-                    .Where(a => a.Name.Contains(name))
-                    .Include(a => a.Books)
-                    .ToList();
+            {         
+                return _authorRep.FindAuthorsByName(name);
             }
             catch (Exception ex)
             {

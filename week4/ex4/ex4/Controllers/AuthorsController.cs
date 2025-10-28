@@ -10,20 +10,19 @@ namespace ex4.Controllers
     [ApiController]
     public class AuthorsController : ControllerBase
     {
-        private readonly AuthorService _authorServices;
+        private readonly IAuthorService _authorService;
 
-        public AuthorsController(AuthorService authorService)
+        public AuthorsController(IAuthorService authorService) 
         {
-            _authorServices = authorService;
+            _authorService = authorService;
         }
-           
 
         [HttpGet]
         public ActionResult<List<Author>> GetAllAuthor()
         {
             try
             {
-                var autors = _authorServices.GetAllAuthors();
+                var autors = _authorService.GetAllAuthors();
                 return Ok(autors);
             }
             catch (Exception ex)
@@ -37,7 +36,7 @@ namespace ex4.Controllers
         {
             try
             {
-                var author = _authorServices.GetAuthorById(id);
+                var author = _authorService.GetAuthorById(id);
                 return Ok(author);
             }
             catch (Exception ex)
@@ -51,7 +50,7 @@ namespace ex4.Controllers
         {
             try
             {
-                var createdAuthor = _authorServices.CreateAuthor(author); 
+                var createdAuthor = _authorService.CreateAuthor(author); 
                 return CreatedAtAction(nameof(GetAuthor), new { id = createdAuthor.Id }, createdAuthor);
             }
             catch (Exception ex)
@@ -65,14 +64,13 @@ namespace ex4.Controllers
         {
             try
             {
-                var existAuthor = _authorServices.UpdateAuthor(id, updateAuthor);
+                var existAuthor = _authorService.UpdateAuthor(id, updateAuthor);
                 return Ok(existAuthor);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }
-            
+            }            
         }
 
         [HttpDelete("{id}")]
@@ -80,7 +78,7 @@ namespace ex4.Controllers
         {
             try
             {
-                _authorServices.DeleteAuthor(id);
+                _authorService.DeleteAuthor(id);
                 return NoContent();
             }
             catch (Exception ex)
@@ -94,7 +92,7 @@ namespace ex4.Controllers
         {
             try
             {
-                var authors = _authorServices.GetAuthorWithBookCount();
+                var authors = _authorService.GetAuthorWithBookCount();
                 return Ok(authors);
             }
             catch (Exception ex)
@@ -108,7 +106,7 @@ namespace ex4.Controllers
         {
             try
             {
-                var authors = _authorServices.FindAuthorsByName(name);
+                var authors = _authorService.FindAuthorsByName(name);
                 return Ok(authors);
             }
             catch (Exception ex)

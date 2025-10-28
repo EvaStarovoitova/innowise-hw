@@ -1,29 +1,27 @@
 ﻿using ex4.Data;
 using ex4.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ex4.Services
 {
-    public class BookService
+    public class BookService : IBookService
     {
-        private readonly LibraryContext _context;
+        private readonly IBookRepository _bookRep;
+        private readonly IAuthorRepository _authorRep;
 
-        public BookService (LibraryContext context)
+        public BookService(IBookRepository bookRep, IAuthorRepository authorRep)
         {
-            _context = context;
+            _bookRep = bookRep;
+            _authorRep = authorRep;
         }
+
         public List<Book> GetAllBooks()
         {
-            return _context.Books
-                .Include(b => b.Author)
-                .ToList();
+            return _bookRep.GetAllWithAuthors();
         }
-
 
         public Book GetBook(int id)
         {
-            var book = _context.Books.Include(b=>b.Author).FirstOrDefault(x => x.Id == id);
+            var book = _bookRep.GetByIdWithAuthor(id);
             if (book == null)
             {
                 throw new Exception("Книга не найдена");
@@ -31,81 +29,59 @@ namespace ex4.Services
             return book;
         }
 
-     
         public Book CreateBook(Book book)
         {
             if (string.IsNullOrWhiteSpace(book.Title))
             {
                 throw new Exception("Название книги обязательно");
             }
-            var authorExists = _context.Authors.Any(a => a.Id == book.AuthorId);
-            if (!authorExists)
+
+            if (!_authorRep.AuthorExists(book.AuthorId))
             {
                 throw new Exception("Указанный автор не существует");
             }
 
             book.Id = 0;
-
-            _context.Books.Add(book);
-            _context.SaveChanges();
-            return book;
-
+            return _bookRep.Create(book);
         }
 
-        
         public Book UpdateBook(int id, Book updatedBook)
         {
-            var existBook = _context.Books.FirstOrDefault(x => x.Id == id);
-
-            if (existBook == null) 
+            var existBook = _bookRep.GetById(id);
+            if (existBook == null)
             {
                 throw new Exception("Книга не найдена");
             }
 
-            if (string.IsNullOrWhiteSpace(updatedBook.Title)) 
+            if (string.IsNullOrWhiteSpace(updatedBook.Title))
             {
                 throw new Exception("Название книги обязательно");
             }
 
-            var authorExists = _context.Authors.Any(a => a.Id == updatedBook.AuthorId);
-            if (!authorExists)
+            if (!_authorRep.AuthorExists(updatedBook.AuthorId))
             {
                 throw new Exception("Указанный автор не существует");
             }
+
             existBook.Title = updatedBook.Title;
             existBook.PublishedYear = updatedBook.PublishedYear;
             existBook.AuthorId = updatedBook.AuthorId;
 
-            _context.SaveChanges();
-            return existBook;
+            return _bookRep.Update(existBook);
         }
 
-       
         public void DeleteBook(int id)
         {
-            var existBook = _context.Books.FirstOrDefault(x => x.Id == id);
-            if (existBook == null)
+            if (!_bookRep.BookExists(id))
             {
                 throw new Exception("Указанной книги не существует");
             }
-            _context.Books.Remove(existBook);
-            _context.SaveChanges();
+            _bookRep.Delete(id);
         }
 
         public List<Book> SelectBookByPublishedYear(int year)
         {
-            try
-            {
-                return _context.Books
-                    .Where(b => b.PublishedYear.Year > year)
-                    .Include(b => b.Author)
-                    .ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Не удалось получить книги, опубликованные после {year} года. Ошибка: {ex.Message}");
-            }
+            return _bookRep.GetBooksByPublishedYear(year);
         }
     }
 }
-

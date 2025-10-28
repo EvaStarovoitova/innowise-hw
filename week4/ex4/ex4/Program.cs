@@ -1,4 +1,5 @@
 ﻿using ex4.Data;
+using ex4.Data.Repositories;
 using ex4.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,8 +18,11 @@ builder.Services.AddControllers()
     });
 builder.Services.AddDbContext<LibraryContext>();
 
-builder.Services.AddScoped<AuthorService>();
-builder.Services.AddScoped<BookService>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();
 
